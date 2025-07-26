@@ -26,6 +26,7 @@ import jakarta.transaction.Transactional;
 
 @Service
 public class ArcFaceService {
+    // 人脸注册与搜索服务
     private static final Logger logger = LoggerFactory.getLogger(ArcFaceService.class);
 
     private final ArcFaceEngine arcFaceEngine;
@@ -41,16 +42,19 @@ public class ArcFaceService {
 
     @Transactional
     public ArcFaceInfoEntity registerFaceFromImage(MultipartFile file){
+        // 人脸注册
         try{
             Path uploadPath = Paths.get(uploadDir);
             Files.createDirectories(uploadPath);
             Path targetPath = uploadPath.resolve(file.getOriginalFilename());
+            // 此处为方便演示，使用文件覆盖选项
             Files.copy(file.getInputStream(), targetPath, StandardCopyOption.REPLACE_EXISTING);
             File storedFile = targetPath.toFile();
 
             FaceFeature faceFeature = arcFaceEngine.extractFaceFeatureFromImage(storedFile, ExtractType.REGISTER);
 
-            ArcFaceInfoEntity arcFaceInfo = new ArcFaceInfoEntity(faceFeature.getFeatureData(), targetPath.toString());
+            // 这里使用文件名作为personName，在实际项目中可能需要从前端获取
+            ArcFaceInfoEntity arcFaceInfo = new ArcFaceInfoEntity(file.getOriginalFilename(), faceFeature.getFeatureData(), targetPath.toString());
             arcFaceInfo = arcFaceInfoRepository.save(arcFaceInfo);
 
             arcFaceEngine.registerFace(arcFaceInfo.getId(), arcFaceInfo.getFaceFeature());
@@ -62,6 +66,7 @@ public class ArcFaceService {
     }
 
     public ArcFaceSearchResponse searchFaceByImage(MultipartFile file){
+        // 人脸搜索
         try{
             Path tempPath = Paths.get(System.getProperty("java.io.tmpdir"), file.getOriginalFilename());
             Files.copy(file.getInputStream(), tempPath);
@@ -73,12 +78,13 @@ public class ArcFaceService {
             Files.delete(tempPath);
 
             ArcFaceSearchResponse arcFaceSearchResponse;
+            // 此处设置阈值为0.8,可以根据实际业务场景调整
             if(searchResult.getMaxSimilar() > 0.8){
                 int faceId = searchResult.getFaceFeatureInfo().getSearchId();
                 Optional<ArcFaceInfoEntity> faceInfo = arcFaceInfoRepository.findById((long)faceId);
-                arcFaceSearchResponse = new ArcFaceSearchResponse(true, faceInfo.get().getImagePath());
+                arcFaceSearchResponse = new ArcFaceSearchResponse(true, faceInfo.get().getPersonName(), faceInfo.get().getImagePath());
             }else{
-                arcFaceSearchResponse = new ArcFaceSearchResponse(false, "");
+                arcFaceSearchResponse = new ArcFaceSearchResponse(false, "", "");
             }
             return arcFaceSearchResponse;
             

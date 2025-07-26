@@ -6,5 +6,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ArcFaceInfoRepository extends JpaRepository<ArcFaceInfoEntity, Long> {
+    // JPA仓库接口，由于使用JPA内置方法，此处留空即可
     
 }

@@ -15,10 +15,12 @@ import jakarta.annotation.PreDestroy;
 
 @Service
 public class ArcFaceInitService {
+    // 引擎初始化服务，用于在APP启动前自动初始化引擎，以及向引擎注册数据库中已有的特征
+    // 由于在配置文件中配置了spring.jpa.hibernate.ddl-auto=create
+    // 所以每次启动前数据库都会被清空，如果需要保留，可以修改create为其他值
     private static final Logger logger = LoggerFactory.getLogger(ArcFaceInitService.class);
 
     private final ArcFaceEngine arcFaceEngine;
-    // 从数据库加载特征
     private final ArcFaceInfoRepository faceInfoRepository; 
 
     public ArcFaceInitService(ArcFaceEngine arcFaceEngine, ArcFaceInfoRepository faceInfoRepository) {
@@ -58,6 +60,7 @@ public class ArcFaceInitService {
 
     @PreDestroy
     public void cleanup() {
+        // 销毁SDK实例
         arcFaceEngine.unInitSdk();
     }
 }

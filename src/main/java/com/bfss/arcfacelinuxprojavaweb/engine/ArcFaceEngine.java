@@ -16,6 +16,7 @@ import com.arcsoft.face.toolkit.ImageInfo;
 
 @Component
 public class ArcFaceEngine {
+    // 将SDK功能封装为Component，以实现依赖注入(DI)与控制反转(IOC)
 
     private static final Logger logger = LoggerFactory.getLogger(ArcFaceEngine.class);
 
@@ -32,7 +33,7 @@ public class ArcFaceEngine {
     private FaceEngine faceEngineInstance = null;
 
     public boolean activateAndInitSdk() {
-        // 激活并初始化引擎
+        // 激活引擎
         logger.info("--- 正在初始化虹软人脸识别SDK ---");
         try {
             faceEngineInstance = new FaceEngine(libPath);
@@ -56,7 +57,8 @@ public class ArcFaceEngine {
         EngineConfiguration engineConfiguration = new EngineConfiguration();
         engineConfiguration.setDetectMode(DetectMode.ASF_DETECT_MODE_IMAGE);
         engineConfiguration.setDetectFaceOrientPriority(DetectOrient.ASF_OP_0_ONLY);
-        engineConfiguration.setDetectFaceMaxNum(10);
+        engineConfiguration.setDetectFaceMaxNum(1);
+        // 这里使用了Large模型
         engineConfiguration.setFaceModel(FaceModel.ASF_REC_LARGE);
 
         // 功能配置
@@ -109,6 +111,7 @@ public class ArcFaceEngine {
         faceFeature.setFeatureData(targetFeatureData);
 
         SearchResult searchResult = new SearchResult();
+        // 这里默认采用了生活照对比方式
         int errorCode = faceEngineInstance.searchFaceFeature(faceFeature, CompareModel.LIFE_PHOTO, searchResult);
 
         if (errorCode != ErrorInfo.MOK.getValue()) {
@@ -146,6 +149,10 @@ public class ArcFaceEngine {
                 logger.warn("图片 {} 中未检测到人脸。", imageFile.getName());
                 return null;
             }
+
+            // 在引擎配置处设置了最大检测人脸数为1,所以此处直接提取检测到的第一个人脸
+            // 如果需要同时识别多张人脸，更改engineConfiguration.setDetectFaceMaxNum(1)
+            // 并根据实际场景选择需要的人脸，如根据人脸框（faceInfo的rect属性）大小选择
             FaceInfo detectedFace = faceInfoList.get(0);
 
             FaceFeature faceFeature = new FaceFeature();

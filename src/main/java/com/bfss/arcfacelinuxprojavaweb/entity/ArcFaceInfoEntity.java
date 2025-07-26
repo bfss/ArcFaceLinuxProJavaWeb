@@ -10,9 +10,13 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "face_info")
 public class ArcFaceInfoEntity {
+    // JPA实体类，由JPA自动在数据库中创建表
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name = "person_name")
+    private String personName;
 
     @Column(name = "face_feature", nullable = false)
     private byte[] faceFeature;
@@ -22,7 +26,8 @@ public class ArcFaceInfoEntity {
 
     public ArcFaceInfoEntity() {}
 
-    public ArcFaceInfoEntity(byte[] faceFeature, String imagePath){
+    public ArcFaceInfoEntity(String personName, byte[] faceFeature, String imagePath){
+        this.personName = personName;
         this.faceFeature = faceFeature;
         this.imagePath = imagePath;
     }
@@ -33,6 +38,14 @@ public class ArcFaceInfoEntity {
 
     public void setId(Long id){
         this.id = id;
+    }
+
+    public String getPersonName(){
+        return personName;
+    }
+
+    public void setPersonName(String personName){
+        this.personName = personName;
     }
 
     public byte[] getFaceFeature(){
