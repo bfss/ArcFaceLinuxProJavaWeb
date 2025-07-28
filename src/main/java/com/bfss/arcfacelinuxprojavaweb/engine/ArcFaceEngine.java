@@ -14,25 +14,15 @@ import com.arcsoft.face.enums.*;
 import com.arcsoft.face.toolkit.ImageFactory;
 import com.arcsoft.face.toolkit.ImageInfo;
 
-@Component
+// @Component
 public class ArcFaceEngine {
     // 将SDK功能封装为Component，以实现依赖注入(DI)与控制反转(IOC)
 
     private static final Logger logger = LoggerFactory.getLogger(ArcFaceEngine.class);
 
-    @Value("${arcsoft.appId}")
-    private String appId;
-    @Value("${arcsoft.sdkKey}")
-    private String sdkKey;
-    @Value("${arcsoft.activeKey}")
-    private String activeKey;
-
-    @Value("${arcsoft.libPath}")
-    private String libPath;
-
     private FaceEngine faceEngineInstance = null;
 
-    public boolean activateAndInitSdk() {
+    public boolean activateAndInitSdk(String appId, String sdkKey, String activeKey, String libPath) {
         // 激活引擎
         logger.info("--- 正在初始化虹软人脸识别SDK ---");
         try {

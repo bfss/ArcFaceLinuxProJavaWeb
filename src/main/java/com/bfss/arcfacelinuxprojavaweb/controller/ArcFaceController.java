@@ -35,17 +35,4 @@ public class ArcFaceController {
             return ResponseEntity.status(HttpStatus.CREATED).body("成功");
         }
     }
-
-    @PostMapping("/search")
-    public ResponseEntity<?> searchFace(
-        @RequestParam("image") MultipartFile image
-    ){
-        // 人脸搜索接口
-        ArcFaceSearchResponse arcFaceSearchResponse = arcFaceService.searchFaceByImage(image);
-        if (arcFaceSearchResponse == null){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("失败");
-        }else{
-            return ResponseEntity.ok(arcFaceSearchResponse);
-        }  
-    }
 }
