@@ -78,7 +78,7 @@ public class ArcFaceEngine {
         return true;
     }
 
-    public boolean registerFace(Long id, byte[] featureData) {
+    public synchronized boolean registerFace(Long id, byte[] featureData) {
         // 注册人脸信息
         FaceFeatureInfo faceFeatureInfo = new FaceFeatureInfo();
         faceFeatureInfo.setSearchId(id.intValue());
@@ -93,7 +93,7 @@ public class ArcFaceEngine {
         return true;
     }
 
-    public int getRegisteredFaceCount() {
+    public synchronized int getRegisteredFaceCount() {
         // 获取已注册的人脸数
         FaceSearchCount faceSearchCount = new FaceSearchCount();
         int errorCode = faceEngineInstance.getFaceCount(faceSearchCount);
@@ -104,7 +104,7 @@ public class ArcFaceEngine {
         return faceSearchCount.getCount();
     }
 
-    public SearchResult searchFace(byte[] targetFeatureData) {
+    public synchronized SearchResult searchFace(byte[] targetFeatureData) {
         // 搜索人脸
 
         FaceFeature faceFeature = new FaceFeature();
@@ -129,7 +129,7 @@ public class ArcFaceEngine {
         }
     }
 
-    public FaceFeature extractFaceFeatureFromImage(File imageFile, ExtractType extractType) {
+    public synchronized FaceFeature extractFaceFeatureFromImage(File imageFile, ExtractType extractType) {
         // 提取特征
         ImageInfo imageInfo = null;
         try {
