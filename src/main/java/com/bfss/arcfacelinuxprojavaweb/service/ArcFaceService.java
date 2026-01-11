@@ -32,6 +32,9 @@ public class ArcFaceService {
     private final ArcFaceEngine arcFaceEngine;
     private final ArcFaceInfoRepository arcFaceInfoRepository;
 
+    @Value("${app.image-url}")
+    private String imageUrl;
+
     @Value("${app.upload-dir}")
     private String uploadDir;
 
@@ -79,10 +82,15 @@ public class ArcFaceService {
 
             ArcFaceSearchResponse arcFaceSearchResponse;
             // 此处设置阈值为0.8,可以根据实际业务场景调整
-            if(searchResult.getMaxSimilar() > 0.8){
+            if(searchResult != null && searchResult.getMaxSimilar() > 0.8){
                 int faceId = searchResult.getFaceFeatureInfo().getSearchId();
                 Optional<ArcFaceInfoEntity> faceInfo = arcFaceInfoRepository.findById((long)faceId);
-                arcFaceSearchResponse = new ArcFaceSearchResponse(true, faceInfo.get().getPersonName(), faceInfo.get().getImagePath());
+                // 在这里将本地图片路径替换为网络路径
+                arcFaceSearchResponse = new ArcFaceSearchResponse(
+                    true, 
+                    faceInfo.get().getPersonName(), 
+                    faceInfo.get().getImagePath().replace(uploadDir, imageUrl)
+                );
             }else{
                 arcFaceSearchResponse = new ArcFaceSearchResponse(false, "", "");
             }
